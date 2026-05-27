@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MousePointerClick, Sparkles, SlidersHorizontal } from "lucide-react";
+import { MousePointerClick, Sparkles, CircleCheck } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -23,7 +23,7 @@ type Step = {
 const STEPS: Step[] = [
   { num: 1, label: "Pick references",                Icon: MousePointerClick },
   { num: 2, label: "AI generates in your direction", Icon: Sparkles },
-  { num: 3, label: "Refine and ship",                Icon: SlidersHorizontal },
+  { num: 3, label: "Refine and ship",                Icon: CircleCheck },
 ];
 
 export function ThreeRefsFlowV4() {

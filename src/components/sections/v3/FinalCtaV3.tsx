@@ -35,7 +35,7 @@ export function FinalCtaV3() {
           </Link>
           <Link
             href="#pricing"
-            className="inline-flex items-center justify-center border border-white/40 bg-transparent text-white hover:border-[var(--envato)] hover:text-[var(--envato)] px-7 py-4 rounded-full font-semibold text-[14px] transition-colors"
+            className="inline-flex items-center justify-center border border-white/40 bg-transparent text-white hover:bg-[var(--envato)]/15 hover:border-[var(--envato)] hover:text-[var(--envato)] px-7 py-4 rounded-full font-semibold text-[14px] transition-colors"
           >
             See Plans
           </Link>

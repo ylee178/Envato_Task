@@ -197,17 +197,15 @@ function BillingToggle({ annual, onToggle }: { annual: boolean; onToggle: () => 
         type="button"
         onClick={() => !annual && onToggle()}
         aria-pressed={annual}
-        className={`inline-flex items-center gap-1.5 px-5 py-2 rounded-full transition-colors ${
+        className={`inline-flex items-center gap-2 px-5 py-2 rounded-full transition-colors ${
           annual ? "bg-[var(--ink)] text-white" : "text-[var(--ink)]/70 hover:text-[var(--ink)]"
         }`}
       >
         <span>Annual</span>
         <span
-          className="inline-flex items-center leading-none text-[9px] font-mono uppercase tracking-[0.14em] px-1.5 py-1 rounded-full self-center"
+          className="text-[10.5px] font-mono uppercase tracking-[0.14em] font-bold transition-colors"
           style={{
-            background: "var(--envato)",
-            color: "var(--ink)",
-            boxShadow: "var(--shadow-glow-neon-pill)",
+            color: annual ? "var(--envato)" : "var(--gradient-brand-end)",
           }}
         >
           Save 35%
