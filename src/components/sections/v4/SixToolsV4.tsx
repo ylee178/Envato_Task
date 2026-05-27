@@ -208,7 +208,7 @@ function PinCard({
       <a
         href="#"
         aria-label={`Generated with ${pin.model}`}
-        className={`group relative block w-full overflow-hidden rounded-md bg-[#101010] ring-1 transition-all duration-300 ${
+        className={`group relative block w-full overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 transition-all duration-300 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] ${
           matched ? "opacity-100" : "opacity-30 grayscale"
         } ${glowClasses}`}
         style={{ aspectRatio: pin.aspect.replace("/", " / ") }}

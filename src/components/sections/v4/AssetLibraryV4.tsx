@@ -66,7 +66,7 @@ function CategoryCard({ category }: { category: Category }) {
     <Link
       href="#"
       aria-label={`${category.name}, ${category.count}`}
-      className="group relative block aspect-[4/5] overflow-hidden bg-[#101010] ring-1 ring-white/8 rounded-md"
+      className="group relative block aspect-[4/5] overflow-hidden bg-[var(--surface-dark-card)] ring-1 ring-white/8 rounded-md hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300"
     >
       <Image
         src={category.src}

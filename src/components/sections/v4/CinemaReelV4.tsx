@@ -79,7 +79,7 @@ export function CinemaReelV4() {
 
 function ReelFrame({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
-    <div className="group relative w-[68vw] sm:w-[44vw] lg:w-[34vw] aspect-[16/9] shrink-0 overflow-hidden bg-[#101010]">
+    <div className="group relative w-[68vw] sm:w-[44vw] lg:w-[34vw] aspect-[16/9] shrink-0 overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 ring-white/5 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300">
       <Image
         src={chapter.src}
         alt={`${chapter.title} by ${chapter.creator}`}

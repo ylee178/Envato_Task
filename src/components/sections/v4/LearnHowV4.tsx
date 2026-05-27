@@ -82,7 +82,7 @@ function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
     <a
       href="#"
       aria-label={`${tutorial.title}, ${tutorial.duration}`}
-      className="group relative block aspect-[3/4] overflow-hidden bg-[#101010] rounded-md ring-1 ring-[var(--line)]"
+      className="group relative block aspect-[3/4] overflow-hidden bg-[var(--surface-dark-card)] rounded-md ring-1 ring-[var(--line)] hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300"
     >
       <Image
         src={tutorial.src}
@@ -108,7 +108,7 @@ function TutorialCard({ tutorial }: { tutorial: Tutorial }) {
           {tutorial.title}
         </div>
         <div className="mt-1 text-[10.5px] font-mono uppercase tracking-[0.2em] text-white/65">
-          {tutorial.duration} · Free
+          {tutorial.duration}
         </div>
       </div>
     </a>
@@ -120,7 +120,7 @@ function BrowseAllCard() {
     <Link
       href="#"
       aria-label="Browse all tutorials"
-      className="group relative block aspect-[3/4] overflow-hidden bg-[#101010] rounded-md ring-1 ring-[var(--line)]"
+      className="group relative block aspect-[3/4] overflow-hidden bg-[var(--surface-dark-card)] rounded-md ring-1 ring-[var(--line)] hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300"
     >
       <Image
         src="/v3/moodboard_collage.jpg"
@@ -146,7 +146,7 @@ function BrowseAllCard() {
           Browse All Tutorials
         </div>
         <div className="mt-1 text-[10.5px] font-mono uppercase tracking-[0.2em] text-white/65">
-          1,000+ free workflows
+          More workflows for every tool
         </div>
       </div>
     </Link>

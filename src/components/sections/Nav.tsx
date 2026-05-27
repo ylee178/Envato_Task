@@ -61,7 +61,7 @@ export function Nav() {
         <div className="ml-auto flex items-center gap-2 text-[13px]">
           <a
             href="#"
-            className="hidden sm:inline-flex items-center text-white border border-white/40 hover:border-[var(--envato)] hover:text-[var(--envato)] px-4 py-2 rounded-full font-semibold tracking-tight transition-colors"
+            className="hidden sm:inline-flex items-center text-white border border-white/40 hover:bg-[var(--envato)]/15 hover:border-[var(--envato)] hover:text-[var(--envato)] px-4 py-2 rounded-full font-semibold tracking-tight transition-colors"
           >
             Sign In
           </a>
