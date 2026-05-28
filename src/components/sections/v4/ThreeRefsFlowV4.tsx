@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { MousePointerClick, Sparkles, CircleCheck } from "lucide-react";
+import Link from "next/link";
+import { MousePointerClick, Sparkles, CircleCheck, ArrowRight } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ className?: string; strokeWidth?: number }>;
 
@@ -88,9 +89,9 @@ export function ThreeRefsFlowV4() {
               roughly fills the height of the video on lg+. No forced line
               breaks; the headline simply wraps to the column width. */}
           <div className="order-1 lg:order-2">
-            <h2 className="font-display tracking-display font-medium leading-[1.02] text-[44px] md:text-[60px] lg:text-[76px] xl:text-[92px]">
+            <h2 className="font-display tracking-display font-medium leading-[1.05] text-[36px] md:text-[48px] lg:text-[56px] xl:text-[64px] pr-4 lg:pr-6 xl:pr-8 overflow-visible">
               Your references become{" "}
-              <em className="italic text-gradient-brand">the AI&apos;s instructions.</em>
+              <em className="italic text-gradient-brand inline-block pr-3 lg:pr-4 xl:pr-6">the AI&apos;s instructions.</em>
             </h2>
             <p
               className="text-[14px] lg:text-[15px] xl:text-[16px] leading-[1.55] text-white/65"
@@ -98,6 +99,18 @@ export function ThreeRefsFlowV4() {
             >
               Prompt-only AI guesses. With Envato, three references tell the model your palette, motion, type, and mood before it generates a single frame.
             </p>
+            <div style={{ marginTop: "var(--gap-text-lg)" }}>
+              <Link
+                href="/creative-flow"
+                className="group inline-flex items-center gap-2 border border-white/40 bg-transparent text-white hover:bg-[var(--envato)]/15 hover:border-[var(--envato)] hover:text-[var(--envato)] px-6 py-3 rounded-full font-semibold text-[14px] transition-colors"
+              >
+                See How It Works
+                <ArrowRight
+                  className="size-4 transition-transform group-hover:translate-x-0.5"
+                  strokeWidth={2.2}
+                />
+              </Link>
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +130,7 @@ function StepCard({ step, active }: { step: Step; active: boolean }) {
       style={{
         padding: "var(--space-4) var(--space-5)",
         borderRadius: "var(--radius-card)",
-        gap: "var(--gap-text-sm)",
+        gap: "4px",
       }}
     >
       <div
@@ -127,12 +140,12 @@ function StepCard({ step, active }: { step: Step; active: boolean }) {
       >
         Step {step.num}
       </div>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-1">
         <Icon
           className="size-7 lg:size-8 shrink-0 text-[var(--envato)]"
           strokeWidth={1.8}
         />
-        <div className="font-display tracking-display font-medium text-[15px] lg:text-[18px] leading-[1.15] text-white whitespace-nowrap">
+        <div className="font-display tracking-display font-medium text-[15px] lg:text-[18px] leading-[1.15] text-white min-w-0">
           {step.label}
         </div>
       </div>

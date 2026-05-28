@@ -10,6 +10,9 @@ type Chapter = {
   creator: string;
   city: string;
   src: string;
+  /** When true, skip the bottom-darkening gradient — for images whose own
+      composition already reads well and the overlay was washing it out. */
+  noOverlay?: boolean;
 };
 
 /*
@@ -23,7 +26,7 @@ type Chapter = {
 const CHAPTERS: Chapter[] = [
   { title: "Boutique Hotel Launch", creator: "@cool_lookin_bug", city: "Melbourne", src: "/v4/reel_01_hotel.jpg" },
   { title: "Indie Beauty Campaign", creator: "@Tapewarp.ai", city: "Sydney", src: "/v4/reel_02_beauty.jpg" },
-  { title: "Festival Identity", creator: "@JosephMartin", city: "Berlin", src: "/v4/reel_03_festival.jpg" },
+  { title: "Festival Identity", creator: "@JosephMartin", city: "Berlin", src: "/v4/reel_03_festival.jpg", noOverlay: true },
   { title: "Editorial Magazine Spread", creator: "@Rourke", city: "London", src: "/v4/reel_04_editorial.jpg" },
   { title: "Cinematic Short", creator: "@JamieFenn", city: "Tokyo", src: "/v4/reel_05_tokyo.jpg" },
   { title: "Botanical Macro Series", creator: "@studioMere", city: "Auckland", src: "/v4/reel_06_botanical.jpg" },
@@ -67,6 +70,7 @@ function ReelMarquee() {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const lastInteractionRef = useRef(0);
   const directionRef = useRef<1 | -1>(1);
+  const hoveringRef = useRef(false);
   const dragRef = useRef<{ startX: number; startScroll: number; active: boolean }>(
     { startX: 0, startScroll: 0, active: false }
   );
@@ -89,7 +93,7 @@ function ReelMarquee() {
       const max = el.scrollWidth - el.clientWidth;
       if (max > 0) {
         const idleFor = now - lastInteractionRef.current;
-        if (!reduced && idleFor > 1100) {
+        if (!reduced && !hoveringRef.current && idleFor > 1100) {
           el.scrollLeft += PIXELS_PER_SECOND * dt * directionRef.current;
         }
         // Ping-pong: reverse direction at each end so nothing repeats on screen.
@@ -170,27 +174,33 @@ function ReelMarquee() {
   };
 
   return (
-    <div
-      ref={scrollerRef}
-      onWheel={onWheel}
-      onTouchStart={noteInteraction}
-      onTouchMove={noteInteraction}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={endDrag}
-      onPointerCancel={endDrag}
-      onClickCapture={onClickCapture}
-      className="relative w-full overflow-x-auto overflow-y-hidden bg-[#070707] overscroll-x-contain cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
-    >
-      <div className="flex w-max gap-3 lg:gap-4 py-4 lg:py-6">
-        {REEL.map((c, i) => (
-          <ReelFrame key={`${c.title}-${i}`} chapter={c} index={i} />
-        ))}
+    <div className="relative w-full bg-[#070707]">
+      <div
+        ref={scrollerRef}
+        onWheel={onWheel}
+        onTouchStart={noteInteraction}
+        onTouchMove={noteInteraction}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onClickCapture={onClickCapture}
+        onMouseEnter={() => { hoveringRef.current = true; }}
+        onMouseLeave={() => { hoveringRef.current = false; }}
+        className="w-full overflow-x-auto overflow-y-hidden overscroll-x-contain cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+      >
+        <div className="flex w-max gap-3 lg:gap-4 py-4 lg:py-6">
+          {REEL.map((c, i) => (
+            <ReelFrame key={`${c.title}-${i}`} chapter={c} index={i} />
+          ))}
+        </div>
       </div>
 
-      {/* Edge fades */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-black to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-black to-transparent" />
+      {/* Edge fades sit on the wrapper (not the scroller) so they stay pinned
+          to the visible viewport edges rather than scrolling with the content
+          and appearing as a vertical dark strip on whichever card is there. */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 lg:w-12 bg-gradient-to-r from-black/90 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 lg:w-12 bg-gradient-to-l from-black/90 to-transparent z-10" />
     </div>
   );
 }
@@ -206,7 +216,9 @@ function ReelFrame({ chapter, index }: { chapter: Chapter; index: number }) {
         loading={index < 2 ? "eager" : "lazy"}
         className="object-cover transition-transform duration-[1200ms] group-hover:scale-[1.03]"
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+      {!chapter.noOverlay && (
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent" />
+      )}
 
       {/* Top-left chapter tag */}
       <div className="absolute top-3 left-3 lg:top-4 lg:left-4 text-[9.5px] lg:text-[10px] font-mono uppercase tracking-[0.22em] text-white/85">

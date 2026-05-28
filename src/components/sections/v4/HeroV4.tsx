@@ -134,7 +134,7 @@ function TrendingRow() {
       </div>
       <div
         ref={scrollRef}
-        className="flex gap-2.5 lg:gap-3 overflow-x-auto py-4 -my-4 scroll-smooth [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+        className="flex gap-2.5 lg:gap-3 overflow-x-auto py-4 -my-4 px-3 -mx-3 scroll-smooth [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
       >
         {TRENDING.map((t) => (
           <TrendCard key={t.label} trend={t} />
