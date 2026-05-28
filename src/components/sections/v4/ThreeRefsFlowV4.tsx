@@ -50,70 +50,55 @@ export function ThreeRefsFlowV4() {
   }, []);
 
   return (
-    <section className="bg-[var(--hero)] text-white py-24 lg:py-32 border-t border-white/5">
+    <section className="bg-[var(--hero)] text-white py-20 lg:py-28 border-t border-white/5">
       <div className="mx-auto max-w-[1920px] px-6 lg:px-10">
-        {/* Title + subtext, single-line each, no eyebrow */}
-        <div style={{ marginBottom: "var(--gap-asset-title)" }}>
-          <h2 className="font-display tracking-display font-medium leading-[1.0] text-[34px] md:text-[44px] lg:text-[54px] lg:whitespace-nowrap">
-            Your references become{" "}
-            <em className="italic text-gradient-brand">the AI&apos;s instructions.</em>
-          </h2>
-          <p
-            className="text-[13px] md:text-[14.5px] lg:text-[16px] leading-[1.45] text-white/65 lg:whitespace-nowrap"
-            style={{ marginTop: "var(--gap-text-lg)" }}
-          >
-            Prompt-only AI guesses. With Envato, three references tell the model your palette, motion, type, and mood before it generates a single frame.
-          </p>
-        </div>
-
-        {/* Big looping video. From lg+, step cards live inside at the bottom.
-            On mobile they stack BELOW the video so the 16:9 frame stays clean. */}
-        <div
-          className="relative aspect-[16/9] overflow-hidden bg-[var(--surface-dark-frame)] ring-1 ring-white/5"
-          style={{ borderRadius: "var(--radius-card)" }}
-        >
-          <video
-            ref={videoRef}
-            poster="/v4/mechanism_flow_poster.jpg"
-            muted
-            loop
-            autoPlay
-            playsInline
-            preload="metadata"
-            className="absolute inset-0 w-full h-full object-cover"
-            aria-hidden="true"
-          >
-            <source src="/v4/mechanism_flow.mp4" type="video/mp4" />
-          </video>
-
-          {/* Bottom darkening so cards inside the video stay legible (lg+) */}
-          <div className="pointer-events-none hidden lg:block absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-
-          {/* Step cards INSIDE video — lg+ only */}
-          <div className="hidden lg:flex absolute inset-x-0 bottom-0 justify-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-10 lg:gap-12 xl:gap-16 items-center">
+          {/* LEFT: video + steps. order-2 on mobile so the title reads first. */}
+          <div className="order-2 lg:order-1">
             <div
-              className="grid grid-cols-3 w-full"
-              style={{
-                maxWidth: 1280,
-                padding: "0 var(--space-10) var(--space-10) var(--space-10)",
-                gap: "var(--space-6)",
-              }}
+              className="relative aspect-[16/9] overflow-hidden bg-[var(--surface-dark-frame)] ring-1 ring-white/5"
+              style={{ borderRadius: "var(--radius-card)" }}
+            >
+              <video
+                ref={videoRef}
+                poster="/v4/mechanism_flow_poster.jpg"
+                muted
+                loop
+                autoPlay
+                playsInline
+                preload="metadata"
+                className="absolute inset-0 w-full h-full object-cover"
+                aria-hidden="true"
+              >
+                <source src="/v4/mechanism_flow.mp4" type="video/mp4" />
+              </video>
+            </div>
+
+            <div
+              className="grid grid-cols-1 sm:grid-cols-3"
+              style={{ marginTop: "var(--space-4)", gap: "var(--space-3)" }}
             >
               {STEPS.map((step, i) => (
                 <StepCard key={step.num} step={step} active={active === i} />
               ))}
             </div>
           </div>
-        </div>
 
-        {/* Mobile step cards — stack BELOW the video, no clipping risk */}
-        <div
-          className="lg:hidden grid grid-cols-1 sm:grid-cols-3"
-          style={{ marginTop: "var(--space-6)", gap: "var(--space-3)" }}
-        >
-          {STEPS.map((step, i) => (
-            <StepCard key={step.num} step={step} active={active === i} />
-          ))}
+          {/* RIGHT: title + subtext. Title scales up so its block of text
+              roughly fills the height of the video on lg+. No forced line
+              breaks; the headline simply wraps to the column width. */}
+          <div className="order-1 lg:order-2">
+            <h2 className="font-display tracking-display font-medium leading-[1.02] text-[44px] md:text-[60px] lg:text-[76px] xl:text-[92px]">
+              Your references become{" "}
+              <em className="italic text-gradient-brand">the AI&apos;s instructions.</em>
+            </h2>
+            <p
+              className="text-[14px] lg:text-[15px] xl:text-[16px] leading-[1.55] text-white/65"
+              style={{ marginTop: "var(--gap-text-lg)" }}
+            >
+              Prompt-only AI guesses. With Envato, three references tell the model your palette, motion, type, and mood before it generates a single frame.
+            </p>
+          </div>
         </div>
       </div>
     </section>

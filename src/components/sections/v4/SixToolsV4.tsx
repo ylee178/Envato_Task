@@ -4,34 +4,38 @@ import { useState } from "react";
 import Image from "next/image";
 
 type ModelKey =
+  | "Seedance 2.0"
+  | "Veo 3.1"
   | "Flux.2"
+  | "Kling 3.0"
+  | "Nano Banana"
   | "Seedream 4.5"
   | "Imagen 4"
-  | "Veo 3.1"
-  | "Kling 3.0"
-  | "Seedance 2.0"
   | "Magnific";
 
 type ModelBadge = { initials: string; bg: string; fg: string };
 
 const MODEL_BADGES: Record<ModelKey, ModelBadge> = {
+  "Seedance 2.0": { initials: "SC", bg: "#d97706", fg: "#0a0a0a" },
+  "Veo 3.1":      { initials: "VE", bg: "#15803d", fg: "#ffffff" },
   "Flux.2":       { initials: "FX", bg: "#0a1f44", fg: "#ffffff" },
+  "Kling 3.0":    { initials: "KL", bg: "#6d28d9", fg: "#ffffff" },
+  "Nano Banana":  { initials: "NB", bg: "#fbbf24", fg: "#0a0a0a" },
   "Seedream 4.5": { initials: "SD", bg: "#b91c1c", fg: "#ffffff" },
   "Imagen 4":     { initials: "IM", bg: "#1d4ed8", fg: "#ffffff" },
-  "Veo 3.1":      { initials: "VE", bg: "#15803d", fg: "#ffffff" },
-  "Kling 3.0":    { initials: "KL", bg: "#6d28d9", fg: "#ffffff" },
-  "Seedance 2.0": { initials: "SC", bg: "#d97706", fg: "#0a0a0a" },
   "Magnific":     { initials: "MG", bg: "#be185d", fg: "#ffffff" },
 };
 
+// Ordered by popularity. Hovering popular chips lights up more pins.
 const FILTER_ORDER: ModelKey[] = [
-  "Flux.2",
-  "Veo 3.1",
-  "Imagen 4",
-  "Kling 3.0",
-  "Seedream 4.5",
-  "Magnific",
   "Seedance 2.0",
+  "Veo 3.1",
+  "Flux.2",
+  "Kling 3.0",
+  "Nano Banana",
+  "Seedream 4.5",
+  "Imagen 4",
+  "Magnific",
 ];
 
 type Pin = {
@@ -46,8 +50,11 @@ type Pin = {
  * model produced which examples. Inactive chip → all pins normal.
  * Active chip → matching pins glow, others dim.
  */
+// Pin counts are popularity-weighted: hovering a top chip glows more cards.
+//   Seedance 2.0: 3  ·  Veo 3.1: 3  ·  Flux.2: 2  ·  Kling 3.0: 2
+//   Nano Banana: 1   ·  Seedream 4.5: 1  ·  Imagen 4: 1  ·  Magnific: 1
 const PINS: Pin[] = [
-  { src: "/v4/pin_01.jpg", model: "Flux.2",       aspect: "1/1"  },
+  { src: "/v4/pin_01.jpg", model: "Seedance 2.0", aspect: "1/1"  },
   { src: "/v4/pin_02.jpg", model: "Veo 3.1",      aspect: "16/9" },
   { src: "/v4/pin_03.jpg", model: "Magnific",     aspect: "1/1"  },
   { src: "/v4/pin_04.jpg", model: "Imagen 4",     aspect: "9/16" },
@@ -55,10 +62,10 @@ const PINS: Pin[] = [
   { src: "/v4/pin_06.jpg", model: "Flux.2",       aspect: "9/16" },
   { src: "/v4/pin_07.jpg", model: "Veo 3.1",      aspect: "16/9" },
   { src: "/v4/pin_08.jpg", model: "Seedream 4.5", aspect: "1/1"  },
-  { src: "/v4/pin_09.jpg", model: "Magnific",     aspect: "1/1"  },
-  { src: "/v4/pin_10.jpg", model: "Imagen 4",     aspect: "16/9" },
+  { src: "/v4/pin_09.jpg", model: "Seedance 2.0", aspect: "1/1"  },
+  { src: "/v4/pin_10.jpg", model: "Veo 3.1",      aspect: "16/9" },
   { src: "/v4/pin_11.jpg", model: "Kling 3.0",    aspect: "9/16" },
-  { src: "/v4/pin_12.jpg", model: "Seedream 4.5", aspect: "1/1"  },
+  { src: "/v4/pin_12.jpg", model: "Nano Banana",  aspect: "1/1"  },
   { src: "/v4/pin_13.jpg", model: "Flux.2",       aspect: "9/16" },
   { src: "/v4/pin_14.jpg", model: "Seedance 2.0", aspect: "16/9" },
 ];
@@ -83,7 +90,7 @@ export function SixToolsV4() {
             className="text-[14px] lg:text-[16px] leading-[1.5] text-white/65 lg:whitespace-nowrap"
             style={{ marginTop: "var(--gap-text-lg)" }}
           >
-            Filter by model to see what each one made. All connected by your references.
+            All connected by your references. Pick the engine that fits the shot.
           </p>
 
           {/* Filter chips */}
@@ -208,7 +215,7 @@ function PinCard({
       <a
         href="#"
         aria-label={`Generated with ${pin.model}`}
-        className={`group relative block w-full overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 transition-all duration-300 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] ${
+        className={`group relative block w-full overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 transition-all duration-300 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary-strong)] ${
           matched ? "opacity-100" : "opacity-30 grayscale"
         } ${glowClasses}`}
         style={{ aspectRatio: pin.aspect.replace("/", " / ") }}

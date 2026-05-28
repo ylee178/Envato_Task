@@ -99,7 +99,7 @@ const FAQS = [
   },
   {
     q: "Why one subscription instead of stacking tools?",
-    a: "Most creative pros pay for 5+ tools every month. Envato bundles the 25M+ reference library, six AI tools, and tutorials into one plan with one commercial licence. No credits to count, no per-tool seat math.",
+    a: "Most creative pros pay for 5+ tools every month. Envato bundles the 28M+ reference library, eight leading AI models, and tutorials into one plan with one commercial licence. No credits to count, no per-tool seat math.",
   },
 ];
 
@@ -129,7 +129,7 @@ export function PricingV4() {
             className="text-[14px] lg:text-[16px] leading-[1.5] text-[var(--muted-ink)] lg:whitespace-nowrap"
             style={{ marginTop: "var(--gap-text-lg)" }}
           >
-            One subscription. AI tools, 25M+ references, lifetime commercial licence.
+            One subscription. AI tools, 28M+ references, lifetime commercial licence.
           </p>
           <div
             className="flex justify-center"
@@ -187,8 +187,10 @@ function BillingToggle({ annual, onToggle }: { annual: boolean; onToggle: () => 
         type="button"
         onClick={() => annual && onToggle()}
         aria-pressed={!annual}
-        className={`px-5 py-2 rounded-full transition-colors ${
-          !annual ? "bg-[var(--ink)] text-white" : "text-[var(--ink)]/70 hover:text-[var(--ink)]"
+        className={`cursor-pointer px-5 py-2 rounded-full transition-colors ${
+          !annual
+            ? "bg-[var(--ink)] text-white hover:bg-[var(--ink)]/90"
+            : "text-[var(--ink)]/70 hover:bg-[var(--ink)]/5 hover:text-[var(--ink)]"
         }`}
       >
         Monthly
@@ -197,8 +199,10 @@ function BillingToggle({ annual, onToggle }: { annual: boolean; onToggle: () => 
         type="button"
         onClick={() => !annual && onToggle()}
         aria-pressed={annual}
-        className={`inline-flex items-center gap-2 px-5 py-2 rounded-full transition-colors ${
-          annual ? "bg-[var(--ink)] text-white" : "text-[var(--ink)]/70 hover:text-[var(--ink)]"
+        className={`cursor-pointer inline-flex items-center gap-2 px-5 py-2 rounded-full transition-colors ${
+          annual
+            ? "bg-[var(--ink)] text-white hover:bg-[var(--ink)]/90"
+            : "text-[var(--ink)]/70 hover:bg-[var(--ink)]/5 hover:text-[var(--ink)]"
         }`}
       >
         <span>Annual</span>

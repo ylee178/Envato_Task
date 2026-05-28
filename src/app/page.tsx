@@ -1,6 +1,6 @@
 import { Nav } from "@/components/sections/Nav";
 import { Footer } from "@/components/sections/Footer";
-import { HeroV3 } from "@/components/sections/v3/HeroV3";
+import { HeroV4 } from "@/components/sections/v4/HeroV4";
 import { FinalCtaV3 } from "@/components/sections/v3/FinalCtaV3";
 import { KpiV4 } from "@/components/sections/v4/KpiV4";
 import { ThreeRefsFlowV4 } from "@/components/sections/v4/ThreeRefsFlowV4";
@@ -26,7 +26,7 @@ export default function Home() {
     <>
       <Nav />
       <main className="flex flex-col">
-        <HeroV3 />
+        <HeroV4 />
         <KpiV4 />
         <ThreeRefsFlowV4 />
         <CinemaReelV4 />

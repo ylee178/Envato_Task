@@ -12,7 +12,7 @@ export function CreativeFlowOutro() {
           <span className="italic text-[var(--accent-purple)]">Now make something.</span>
         </h2>
         <p className="mt-6 text-[16px] leading-relaxed text-[var(--muted-ink)] max-w-[560px] mx-auto">
-          One subscription. 25M+ references. Native AI tools. Lifetime commercial licence
+          One subscription. 28M+ references. Native AI tools. Lifetime commercial licence
           on everything you generate or download.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">

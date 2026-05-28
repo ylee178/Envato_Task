@@ -4,8 +4,8 @@ type Stat = {
 };
 
 const STATS: Stat[] = [
-  { kpi: "25M+", label: "Human-crafted references" },
-  { kpi: "Unlimited", label: "AI generation · Downloads" },
+  { kpi: "28M+", label: "Human-crafted references" },
+  { kpi: "Unlimited", label: "Downloads" },
   { kpi: "One subscription", label: "All-in-one" },
   { kpi: "Lifetime", label: "Commercial license" },
 ];

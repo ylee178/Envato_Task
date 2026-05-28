@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
@@ -30,15 +31,17 @@ const CHAPTERS: Chapter[] = [
   { title: "Neo-Brutalist Print", creator: "@hard_paper", city: "Brooklyn", src: "/v4/reel_08_brutalist.jpg" },
 ];
 
-const REEL = [...CHAPTERS, ...CHAPTERS];
+// One copy only: each chapter shows once. The auto-scroll ping-pongs
+// between the two ends instead of looping so nothing duplicates on screen.
+const REEL = CHAPTERS;
 
 export function CinemaReelV4() {
   return (
     <section className="relative bg-black text-white overflow-hidden pb-20 lg:pb-28">
-      {/* Section header */}
+      {/* Section header. paddingBottom is the 40px gap into the carousel. */}
       <div
         className="mx-auto max-w-[1920px] px-6 lg:px-10 pt-20 lg:pt-28"
-        style={{ paddingBottom: "var(--gap-text-lg)" }}
+        style={{ paddingBottom: "var(--gap-asset-title)" }}
       >
         <h2 className="font-display tracking-display font-medium leading-[1.0] text-[40px] lg:text-[60px]">
           Made by the{" "}
@@ -52,34 +55,149 @@ export function CinemaReelV4() {
         </p>
       </div>
 
-      {/* Cinema bars + full-bleed marquee */}
-      <div className="relative w-full">
-        {/* Top cinema bar */}
-        <div className="h-6 lg:h-10 bg-black" />
+      <ReelMarquee />
 
-        {/* Marquee strip */}
-        <div className="relative w-full overflow-hidden bg-[#070707]">
-          <div className="flex w-max animate-cinema-scroll gap-3 lg:gap-4 py-4 lg:py-6">
-            {REEL.map((c, i) => (
-              <ReelFrame key={`${c.title}-${i}`} chapter={c} index={i} />
-            ))}
-          </div>
-
-          {/* Edge fades */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-black to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-black to-transparent" />
-        </div>
-
-        {/* Bottom cinema bar */}
-        <div className="h-6 lg:h-10 bg-black" />
-      </div>
+      {/* Bottom cinema bar */}
+      <div className="h-6 lg:h-10 bg-black" />
     </section>
+  );
+}
+
+function ReelMarquee() {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const lastInteractionRef = useRef(0);
+  const directionRef = useRef<1 | -1>(1);
+  const dragRef = useRef<{ startX: number; startScroll: number; active: boolean }>(
+    { startX: 0, startScroll: 0, active: false }
+  );
+  const draggedRef = useRef(false);
+
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const PIXELS_PER_SECOND = 80;
+    let raf = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const dt = (now - last) / 1000;
+      last = now;
+
+      const max = el.scrollWidth - el.clientWidth;
+      if (max > 0) {
+        const idleFor = now - lastInteractionRef.current;
+        if (!reduced && idleFor > 1100) {
+          el.scrollLeft += PIXELS_PER_SECOND * dt * directionRef.current;
+        }
+        // Ping-pong: reverse direction at each end so nothing repeats on screen.
+        if (el.scrollLeft <= 0) {
+          el.scrollLeft = 0;
+          directionRef.current = 1;
+        } else if (el.scrollLeft >= max) {
+          el.scrollLeft = max;
+          directionRef.current = -1;
+        }
+      }
+
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  const noteInteraction = () => {
+    lastInteractionRef.current = performance.now();
+  };
+
+  const onWheel = (e: React.WheelEvent<HTMLDivElement>) => {
+    noteInteraction();
+    const el = scrollerRef.current;
+    if (!el) return;
+    // Convert vertical wheel intent into horizontal scroll so wheel-mouse users
+    // can move the reel. Trackpad horizontal gestures already produce deltaX
+    // and scroll natively, so we only intercept dominant vertical wheels.
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && Math.abs(e.deltaY) > 1) {
+      el.scrollLeft += e.deltaY;
+      e.preventDefault();
+    }
+  };
+
+  const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    noteInteraction();
+    // Touch and pen use native overflow-x scrolling; only intercept mouse.
+    if (e.pointerType !== "mouse") return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    dragRef.current = {
+      startX: e.clientX,
+      startScroll: el.scrollLeft,
+      active: true,
+    };
+    draggedRef.current = false;
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const onPointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active) return;
+    const el = scrollerRef.current;
+    if (!el) return;
+    const dx = e.clientX - dragRef.current.startX;
+    if (Math.abs(dx) > 4) draggedRef.current = true;
+    el.scrollLeft = dragRef.current.startScroll - dx;
+    noteInteraction();
+  };
+
+  const endDrag = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active) return;
+    dragRef.current.active = false;
+    const el = scrollerRef.current;
+    if (el?.hasPointerCapture(e.pointerId)) {
+      el.releasePointerCapture(e.pointerId);
+    }
+  };
+
+  // Swallow the click that fires immediately after a drag so we don't trigger
+  // the card link the reader was using as a handle.
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (draggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      draggedRef.current = false;
+    }
+  };
+
+  return (
+    <div
+      ref={scrollerRef}
+      onWheel={onWheel}
+      onTouchStart={noteInteraction}
+      onTouchMove={noteInteraction}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onClickCapture={onClickCapture}
+      className="relative w-full overflow-x-auto overflow-y-hidden bg-[#070707] overscroll-x-contain cursor-grab active:cursor-grabbing select-none [&::-webkit-scrollbar]:hidden [scrollbar-width:none]"
+    >
+      <div className="flex w-max gap-3 lg:gap-4 py-4 lg:py-6">
+        {REEL.map((c, i) => (
+          <ReelFrame key={`${c.title}-${i}`} chapter={c} index={i} />
+        ))}
+      </div>
+
+      {/* Edge fades */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-24 lg:w-40 bg-gradient-to-r from-black to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-24 lg:w-40 bg-gradient-to-l from-black to-transparent" />
+    </div>
   );
 }
 
 function ReelFrame({ chapter, index }: { chapter: Chapter; index: number }) {
   return (
-    <div className="group relative w-[68vw] sm:w-[44vw] lg:w-[34vw] aspect-[16/9] shrink-0 overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 ring-white/5 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary)] transition-all duration-300">
+    <div className="group relative w-[68vw] sm:w-[44vw] lg:w-[34vw] aspect-[16/9] shrink-0 overflow-hidden rounded-md bg-[var(--surface-dark-card)] ring-1 ring-white/5 hover:ring-2 hover:ring-[var(--envato)] hover:shadow-[var(--shadow-glow-primary-strong)] transition-all duration-300">
       <Image
         src={chapter.src}
         alt={`${chapter.title} by ${chapter.creator}`}

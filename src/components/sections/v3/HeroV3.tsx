@@ -1,15 +1,17 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 /*
  * Single-clip hero (mirrors HeroV2 logic):
- *   - hero_v3_main.mp4 autoplays once from start to end (~4s)
- *   - On ended, the watermarked last frame fades into hero_v3_main.jpg
- *     so the resting state is the sharp, unbranded collage.
- *   - A page refresh re-mounts the component → video plays again.
+ *   - On mount, the first-frame poster shows so the eye never lands on the
+ *     final state by mistake. hero_v3_main.mp4 then autoplays once from
+ *     start to end (~4s).
+ *   - On ended, the final still hero_v3_main.jpg fades in and holds.
+ *   - A page refresh re-mounts the component, the video is rewound to 0
+ *     and played, so the reader always starts from frame one.
  */
 
 const FINAL_FADE_MS = 1400;
@@ -17,6 +19,24 @@ const FINAL_FADE_MS = 1400;
 export function HeroV3() {
   const [showFinal, setShowFinal] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    try {
+      v.currentTime = 0;
+    } catch {
+      /* some browsers throw if metadata hasn't loaded yet */
+    }
+    const start = () => {
+      v.play().catch(() => {
+        /* autoplay may be blocked; leave the poster visible */
+      });
+    };
+    if (v.readyState >= 2) start();
+    else v.addEventListener("loadeddata", start, { once: true });
+    return () => v.removeEventListener("loadeddata", start);
+  }, []);
 
   return (
     <section className="relative isolate bg-[var(--hero)] text-[var(--hero-ink)] overflow-hidden">
@@ -30,8 +50,8 @@ export function HeroV3() {
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[var(--hero)]/78 via-[var(--hero)]/35 to-transparent" />
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[var(--hero)]/62 via-[var(--hero)]/12 to-[var(--hero)]/25" />
 
-      <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10 pt-24 lg:pt-28 pb-20 lg:pb-28 flex items-center min-h-[92svh]">
-        <div className="relative z-10 max-w-[760px]">
+      <div className="relative mx-auto max-w-[1920px] px-6 lg:px-10 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-28 flex items-center min-h-[72svh] sm:min-h-[80svh] lg:min-h-[92svh]">
+        <div className="relative z-10 w-full max-w-[760px]">
           <h1
             className="font-display tracking-display font-medium leading-[0.86]"
             style={{ filter: "drop-shadow(0 2px 10px rgba(0,0,0,0.5)) drop-shadow(0 8px 28px rgba(0,0,0,0.35))" }}
@@ -120,13 +140,13 @@ function HeroV3Stage({
         {/* Hero video plays once, fades to the clean still on ended */}
         <video
           ref={videoRef}
-          poster="/v3/hero_v3_main.jpg"
+          poster="/v3/hero_v3_first_frame.jpg"
           muted
           playsInline
           autoPlay
           preload="auto"
           onEnded={onEnded}
-          className="absolute inset-0 w-full h-full object-cover object-right"
+          className="absolute inset-0 w-full h-full object-cover object-center lg:object-right"
         >
           <source src="/v3/hero_v3_main.mp4" type="video/mp4" />
         </video>
@@ -138,7 +158,7 @@ function HeroV3Stage({
           fill
           sizes="100vw"
           quality={92}
-          className="object-cover object-right"
+          className="object-cover object-center lg:object-right"
           style={{
             opacity: showFinal ? 1 : 0,
             transitionProperty: "opacity",

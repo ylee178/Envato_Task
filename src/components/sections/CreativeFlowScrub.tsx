@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { AnimatePresence, motion, useScroll, useTransform, type MotionValue } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useScroll, useTransform, type MotionValue } from "framer-motion";
 import { Check } from "lucide-react";
 
 /* ============================================================
@@ -78,14 +78,17 @@ const STAGES: Stage[] = [
     num: "04",
     eyebrow: "Orchestration",
     title: "The right AI, picked for you.",
-    body: "Veo for video, MusicGen for sound, your foundry families for type. {{Routed automatically}}. You never pick a tool again.",
+    body: "Seedance, Veo, and Kling for video. Flux, Seedream, and Imagen for image. Nano Banana for character consistency. Magnific for finishing. {{Routed automatically}}. You never pick a tool again.",
     src: "/cf_04_orchestration.jpg",
     pins: [
-      { x: "26%", y: "20%", label: "→ Veo 3", appearAt: 0.15 },
-      { x: "76%", y: "20%", label: "→ MusicGen", appearAt: 0.3 },
-      { x: "16%", y: "55%", label: "→ ImageGen", appearAt: 0.45 },
-      { x: "84%", y: "55%", label: "→ Magnific", appearAt: 0.6 },
-      { x: "48%", y: "78%", label: "→ GPT-4o", appearAt: 0.75 },
+      { x: "16%", y: "20%", label: "→ Seedance 2.0", appearAt: 0.08 },
+      { x: "50%", y: "16%", label: "→ Veo 3.1",      appearAt: 0.18 },
+      { x: "84%", y: "20%", label: "→ Flux.2",       appearAt: 0.28 },
+      { x: "16%", y: "54%", label: "→ Kling 3.0",    appearAt: 0.38 },
+      { x: "84%", y: "54%", label: "→ Nano Banana",  appearAt: 0.50 },
+      { x: "20%", y: "82%", label: "→ Seedream 4.5", appearAt: 0.62 },
+      { x: "50%", y: "85%", label: "→ Imagen 4",     appearAt: 0.74 },
+      { x: "82%", y: "82%", label: "→ Magnific",     appearAt: 0.86 },
     ],
   },
   {
@@ -117,19 +120,19 @@ const STAGES: Stage[] = [
     num: "07",
     eyebrow: "Flow State",
     title: "Less tabs. More flow.",
-    body: "The work, only. {{25 million references and 7 AI tools, in one place}}, at the same speed your idea is moving.",
+    body: "The work, only. {{28M+ references, eight leading AI models, one subscription}}, at the same speed your idea is moving.",
     src: "/cf_07_flow.jpg",
     pins: [
-      { x: "22%", y: "28%", label: "25M+ references", appearAt: 0.2 },
-      { x: "78%", y: "28%", label: "7 native AI tools", appearAt: 0.42 },
-      { x: "50%", y: "65%", label: "1 subscription", appearAt: 0.64 },
+      { x: "22%", y: "28%", label: "28M+ references",     appearAt: 0.2 },
+      { x: "78%", y: "28%", label: "8 leading AI models", appearAt: 0.42 },
+      { x: "50%", y: "65%", label: "1 subscription",      appearAt: 0.64 },
     ],
   },
   {
     num: "08",
     eyebrow: "Out there",
     title: "Make something only you can make.",
-    body: "{{25M+ references behind every move}}. Yours, and the ones still to come.",
+    body: "{{The whole library behind every move}}. Yours, and the ones still to come.",
     src: "/cf_08_outthere.jpg",
   },
 ];
@@ -145,7 +148,7 @@ export function CreativeFlowScrub() {
     <section
       ref={ref}
       className="relative bg-[#050505] text-white"
-      style={{ height: `${STAGES.length * 160}vh` }}
+      style={{ height: `${STAGES.length * 220}vh` }}
     >
       <div className="sticky top-0 h-screen w-full overflow-hidden">
         {/* Full-bleed image stack */}
@@ -194,16 +197,31 @@ function ImageLayer({
   const isFirst = index === 0;
   const isLast = index === n - 1;
 
-  const inStart = Math.max(0, index * slot - slot * 0.3);
-  const inEnd = Math.max(0, index * slot + slot * 0.2);
-  const outStart = Math.min(1, (index + 1) * slot - slot * 0.2);
-  const outEnd = Math.min(1, (index + 1) * slot + slot * 0.3);
+  // Tightened crossfade so each stage holds at full opacity for ~80% of its
+  // slot; the longer dwell stops the eye from skating through stages.
+  const inStart = Math.max(0, index * slot - slot * 0.12);
+  const inEnd = Math.max(0, index * slot + slot * 0.08);
+  const outStart = Math.min(1, (index + 1) * slot - slot * 0.08);
+  const outEnd = Math.min(1, (index + 1) * slot + slot * 0.12);
 
   const offsets = isLast ? [inStart, inEnd, 1] : [inStart, inEnd, outStart, outEnd];
   const values = isLast ? [isFirst ? 1 : 0, 1, 1] : [isFirst ? 1 : 0, 1, 1, 0];
 
-  const opacity = useTransform(progress, offsets, values);
+  const scrollOpacity = useTransform(progress, offsets, values);
   const scale = useTransform(progress, [inStart, outEnd], [1.04, 1.12]);
+
+  // Hold the layer hidden until the image (or the reference-wall composite)
+  // is actually ready, so the scroll-tied crossfade never reveals a half-loaded
+  // frame mid-transition.
+  const [ready, setReady] = useState(stage.layer === "reference-wall");
+  const readyMV = useMotionValue(ready ? 1 : 0);
+  useEffect(() => {
+    readyMV.set(ready ? 1 : 0);
+  }, [ready, readyMV]);
+  const opacity = useTransform([scrollOpacity, readyMV], (vals) => {
+    const [v, r] = vals as [number, number];
+    return v * r;
+  });
 
   const slotStart = index * slot;
 
@@ -216,9 +234,10 @@ function ImageLayer({
           src={stage.src}
           alt={stage.eyebrow}
           fill
-          priority={index < 2}
+          priority
           sizes="100vw"
           className="object-cover"
+          onLoad={() => setReady(true)}
         />
       )}
       {stage.pins?.map((pin, i) => (
@@ -293,7 +312,7 @@ function ScrollPin({
 
 /* ============================================================
    ReferenceWall. Stage 02 custom layer.
-   A wall of many reference thumbnails (signals scale: 25M+).
+   A wall of many reference thumbnails (signals scale: 28M+).
    Three specific cards get "selected" as the user scrolls
    through stage 02's slot, with pin annotations.
    ============================================================ */
@@ -597,14 +616,14 @@ function ActiveOverlay({ progress }: { progress: MotionValue<number> }) {
             {isFinal && (
               <div className="mt-10 flex flex-wrap items-center justify-center gap-4 pointer-events-auto">
                 <Link
-                  href="/"
-                  className="inline-flex items-center justify-center border border-[var(--envato)] bg-transparent text-white hover:bg-[var(--envato)] hover:text-[var(--ink)] px-7 py-4 rounded-full font-semibold text-[14px] transition-colors shadow-[0_0_60px_rgba(135,230,75,0.25)]"
+                  href="/#pricing"
+                  className="inline-flex items-center justify-center bg-[var(--envato)] text-[var(--ink)] hover:bg-[var(--envato-deep)] hover:text-white px-7 py-4 rounded-full font-semibold text-[14px] transition-colors shadow-[0_0_60px_rgba(135,230,75,0.25)]"
                 >
-                  Start Your Flow
+                  Go Unlimited
                 </Link>
                 <Link
                   href="/"
-                  className="inline-flex items-center gap-2 text-white border border-white/40 hover:border-[var(--envato)] hover:text-[var(--envato)] px-6 py-4 rounded-full text-[14px] font-semibold transition-colors"
+                  className="inline-flex items-center gap-2 text-white border border-white/40 hover:bg-[var(--envato)]/15 hover:border-[var(--envato)] hover:text-[var(--envato)] px-6 py-4 rounded-full text-[14px] font-semibold transition-colors"
                 >
                   Back to Homepage
                 </Link>

@@ -26,7 +26,7 @@ const CATEGORIES: Category[] = [
   { name: "Fonts",                count: "78K+",  src: "/v4/cat_09_fonts.jpg" },
   { name: "Graphics",             count: "280K+", src: "/v4/cat_10_graphics.jpg" },
   { name: "Add-ons & LUTs",       count: "38K+",  src: "/v4/cat_11_addons.jpg" },
-  { name: "All Categories",       count: "28.1M+", src: "/v4/cat_12_all.jpg" },
+  { name: "All Categories",       count: "28M+",   src: "/v4/cat_12_all.jpg" },
 ];
 
 export function AssetLibraryV4() {

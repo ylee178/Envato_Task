@@ -24,7 +24,7 @@ const jetbrains = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Envato. Escape the generic.",
   description:
-    "Start with what moves you. We'll handle the rest. 25M+ assets, AI tools, lifetime commercial licence.",
+    "Start with what moves you. We'll handle the rest. 28M+ assets, AI tools, lifetime commercial licence.",
 };
 
 export default function RootLayout({
